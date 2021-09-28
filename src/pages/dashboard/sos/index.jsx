@@ -1,17 +1,15 @@
 import { Col, Row, Card, Statistic} from 'antd';
-import { useRequest } from 'umi';
+import {useModel, useRequest} from 'umi';
 import { GridContent } from '@ant-design/pro-layout';
 import React, {Suspense, useRef, useState} from "react";
 import styles from "@/pages/dashboard/repairs/style.less";
 import {fakeChartData, getSosCustomData, getSosData} from "./service";
 import SosBarPanel from "./components/SosBarPanel";
 import moment from "moment";
-import {getNumberOfRepairs} from "@/pages/dashboard/repairs/service";
-import {getTimeDistance} from "@/pages/dashboard/analysis/utils/utils";
 import PageLoading from "@/pages/dashboard/analysis/components/PageLoading";
 
 const Sos = () => {
-  const [rangePickerValue, setRangePickerValue] = React.useState(getTimeDistance('year'));
+  const {initialState} = useModel('@@initialState');
   const { loading, data } = useRequest(fakeChartData);
   const [sosData, setSosData] = useState([]);
   const [sosCustomData, setSosCustomData] = useState({})
@@ -24,34 +22,26 @@ const Sos = () => {
     const secs = minSeconds % 60;
     return `${hours}h ${mins}m ${secs}s`;
   }
+
+  const store = initialState.store;
+  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
+  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
   React.useEffect(() => {
-    const startTime = moment(rangePickerValue[0]).format('YYYY-MM-DD HH:mm:ss');
-    const endTime = moment(rangePickerValue[1]).format('YYYY-MM-DD HH:mm:ss');
-    getSosData(startTime, endTime).then((res) => {
+    getSosData(startTime, endTime, store).then((res) => {
       console.log(res)
       setSosData(res)
     })
-  }, [])
+  }, [initialState])
 
   React.useEffect(() => {
-    getSosCustomData().then((res) => {
+    getSosCustomData(startTime, endTime).then((res) => {
       console.log(res)
       setSosCustomData({
         'average_time': changeTimeType(res['average_time']),
         'total_revenue': res['total_revenue']
       })
     })
-  }, [])
-
-  const handleRangePickerChange = (value) => {
-    setRangePickerValue(value);
-    const startTime = moment(value[0]).format('YYYY-MM-DD HH:mm:ss');
-    const endTime = moment(value[1]).format('YYYY-MM-DD HH:mm:ss');
-    getSosData(startTime, endTime).then((res) => {
-      console.log(res)
-      setSosData(res)
-    })
-  }
+  }, [initialState])
   return (
     <GridContent>
       <>
@@ -61,8 +51,6 @@ const Sos = () => {
               <SosBarPanel
                 barData={sosData}
                 loading={loading}
-                rangePickerValue={rangePickerValue}
-                handleRangePickerChange={handleRangePickerChange}
               />
             </Suspense>
           </Col>

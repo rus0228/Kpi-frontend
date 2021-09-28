@@ -27,19 +27,26 @@ export async function getInitialState() {
     return undefined;
   }; // 如果是登录页面，不执行
 
-  if (history.location.pathname !== loginPath) {
-    const currentUser = await fetchUserInfo();
-    return {
-      fetchUserInfo,
-      currentUser,
-      settings: {},
-    };
-  }
-
+  const currentUser = await fetchUserInfo();
   return {
     fetchUserInfo,
+    currentUser,
     settings: {},
   };
+
+  // if (history.location.pathname !== loginPath) {
+  //   const currentUser = await fetchUserInfo();
+  //   return {
+  //     fetchUserInfo,
+  //     currentUser,
+  //     settings: {},
+  //   };
+  // }
+  //
+  // return {
+  //   fetchUserInfo,
+  //   settings: {},
+  // };
 } // ProLayout 支持的api https://procomponents.ant.design/components/layout
 
 export const layout = ({ initialState }) => {
@@ -59,14 +66,14 @@ export const layout = ({ initialState }) => {
     },
     links: isDev
       ? [
-          <Link to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
-          <Link to="/~docs">
-            <BookOutlined />
-            <span>业务组件文档</span>
-          </Link>,
+          // <Link to="/umi/plugin/openapi" target="_blank">
+          //   <LinkOutlined />
+          //   <span>OpenAPI 文档</span>
+          // </Link>,
+          // <Link to="/~docs">
+          //   <BookOutlined />
+          //   <span>业务组件文档</span>
+          // </Link>,
         ]
       : [],
     menuHeaderRender: undefined,

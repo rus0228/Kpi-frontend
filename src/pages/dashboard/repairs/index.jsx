@@ -1,21 +1,23 @@
 import { Col, Row, Card, Statistic} from 'antd';
-import { useRequest } from 'umi';
+import {useModel, useRequest} from 'umi';
 import { GridContent } from '@ant-design/pro-layout';
 import React, { Suspense, useState } from "react";
 import NumRepairs from "./components/NumRepairs";
 import RepairType from "./components/RepairType";
-import { getTimeDistance } from "@/pages/dashboard/analysis/utils/utils";
-import { fakeChartData, getNumberOfRepairs, getRepairType } from "./service";
+import MostInteractionUsers from "./components/MostInteractionUsers";
+import { fakeChartData, getNumberOfRepairs, getRepairType, getMostInteractionData } from "./service";
 import PageLoading from "@/pages/dashboard/analysis/components/PageLoading";
 import styles from "@/pages/dashboard/analysis/style.less";
 import moment from "moment";
 
 const Monitor = () => {
-  const [rangePickerValue, setRangePickerValue] = useState(getTimeDistance('year'));
+  const {initialState} = useModel('@@initialState');
   const { loading, data } = useRequest(fakeChartData);
   const [numberOfRepairsData, setNumberOfRepairsData] = useState([]);
   const [restRepairData, setRestRepairData] = useState({});
   const [repairTypeData, setRepairTypeData] = useState([])
+
+  const [mostInteractionData, setMostInteractionData] = useState([]);
 
   const changeTimeType = (time) => {
     const seconds = Math.floor(parseFloat(time));
@@ -26,19 +28,13 @@ const Monitor = () => {
     return `${hours}h ${mins}m ${secs}s`;
   }
 
-  React.useEffect(() => {
-    getRepairType().then((res) => {
-      console.log(res)
-      setRepairTypeData(res);
-    })
-  }, [])
+  const store = initialState.store;
+  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
+  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
 
   React.useEffect(() => {
-    const startTime = moment(rangePickerValue[0]).format('YYYY-MM-DD HH:mm:ss');
-    const endTime = moment(rangePickerValue[1]).format('YYYY-MM-DD HH:mm:ss');
-    getNumberOfRepairs(startTime, endTime)
+    getNumberOfRepairs(startTime, endTime, store)
       .then((res) => {
-        console.log(res)
         setNumberOfRepairsData(res[0])
         setRestRepairData({
           completed: res[1][0]['completed'],
@@ -47,22 +43,13 @@ const Monitor = () => {
           average_value_repair: res[4][0]['average_value_repair']
         })
       })
-  }, [])
-
-  const handleRangePickerChange = (value) => {
-    setRangePickerValue(value);
-    const startTime = moment(value[0]).format('YYYY-MM-DD HH:mm:ss');
-    const endTime = moment(value[1]).format('YYYY-MM-DD HH:mm:ss');
-    getNumberOfRepairs(startTime, endTime).then((res) => {
-      setNumberOfRepairsData(res[0])
-      setRestRepairData({
-        completed: res[1][0]['completed'],
-        cancelled: res[2][0]['cancelled'],
-        average_time_repair: new Date(parseFloat(res[3][0]['average_time_repair']) * 1000).toISOString().substr(11, 8),
-        average_value_repair: res[3][0]['average_value_repair']
-      })
+    getRepairType(startTime, endTime, store).then((res) => {
+      setRepairTypeData(res);
     })
-  };
+    getMostInteractionData(startTime, endTime, store).then((res) => {
+      setMostInteractionData(res);
+    })
+  }, [initialState])
 
   return (
     <GridContent>
@@ -73,8 +60,6 @@ const Monitor = () => {
               <NumRepairs
                 loading={loading}
                 NumberOfRepairsData={numberOfRepairsData}
-                rangePickerValue={rangePickerValue}
-                handleRangePickerChange={handleRangePickerChange}
               />
             </Suspense>
           </Col>
@@ -114,9 +99,9 @@ const Monitor = () => {
         <Row gutter={24}>
           <Col xl={12} lg={24} md={24} sm={24} xs={24}>
             <Suspense fallback={null}>
-              <RepairType
+              <MostInteractionUsers
                 loading={loading}
-                repairTypeData={repairTypeData}
+                mostInteractionData={mostInteractionData}
               />
             </Suspense>
           </Col>

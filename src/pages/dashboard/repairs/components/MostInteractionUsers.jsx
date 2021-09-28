@@ -3,14 +3,13 @@ import numeral from 'numeral';
 import { Donut } from '@ant-design/charts';
 import React from 'react';
 import styles from '../style.less';
-const {RangePicker} = DatePicker;
 
-const NumRepairs = ({loading, NumberOfRepairsData}) => {
-  const data = [];
-  NumberOfRepairsData.map((item) => {
+const MostInteractionUsers = ({loading, mostInteractionData}) => {
+  const data = []
+  mostInteractionData.map((item) => {
     data.push({
-      x: `status ${item.status}`,
-      y: item.count
+      x: `UserID-${item['user_id']}`,
+      y: item['count']
     })
   })
   return (
@@ -18,7 +17,7 @@ const NumRepairs = ({loading, NumberOfRepairsData}) => {
       loading={loading}
       className={styles.salesCard}
       bordered={false}
-      title="Number of repairs"
+      title="Users with most interaction"
       style={{
         height: '100%',
       }}
@@ -43,7 +42,7 @@ const NumRepairs = ({loading, NumberOfRepairsData}) => {
             },
           }}
           statistic={{
-            totalLabel: 'Total Number',
+            totalLabel: 'Total',
           }}
         />
       </div>
@@ -51,4 +50,4 @@ const NumRepairs = ({loading, NumberOfRepairsData}) => {
   )
 };
 
-export default NumRepairs;
+export default MostInteractionUsers;

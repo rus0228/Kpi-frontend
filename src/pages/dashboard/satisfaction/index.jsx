@@ -1,30 +1,32 @@
 import { Col, Row, Card, Statistic} from 'antd';
-import { useRequest } from 'umi';
+import {useModel, useRequest} from 'umi';
 import { GridContent } from '@ant-design/pro-layout';
 import React, { Suspense, useState } from "react";
 import styles from "@/pages/dashboard/repairs/style.less";
 import {Donut} from "@ant-design/charts";
 import numeral from "numeral";
 import {getCustomerEvaluation, fakeChartData} from "./service";
+import moment from "moment";
 
 const Satisfaction = () => {
+  const {initialState} = useModel('@@initialState');
   const { loading } = useRequest(fakeChartData);
   const [evaluationData, setEvaluationData] = useState([])
-
+  const store = initialState.store;
+  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
+  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
   React.useEffect(() => {
-    getCustomerEvaluation().then((res) => {
+    getCustomerEvaluation(startTime, endTime, store).then((res) => {
       const data = []
-      console.log(res)
       res.map((item) => {
         data.push({
           x: `star ${item['star_rating']}`,
           y: item['count']
         })
       })
-
       setEvaluationData([...data])
     })
-  }, [])
+  }, [initialState])
   return (
     <GridContent>
       <>

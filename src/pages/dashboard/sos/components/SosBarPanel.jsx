@@ -5,7 +5,7 @@ import React from 'react';
 import styles from '../style.less';
 
 const {RangePicker} = DatePicker;
-const SosBarPanel = ({loading, barData, rangePickerValue, handleRangePickerChange}) => {
+const SosBarPanel = ({loading, barData}) => {
   const data = [];
   const actions = ['received', 'shipped']
   barData.map((item, index) => {
@@ -31,17 +31,6 @@ const SosBarPanel = ({loading, barData, rangePickerValue, handleRangePickerChang
       style={{
         height: '100%',
       }}
-      extra={
-        <div className={styles.salesCardExtra}>
-          <RangePicker
-            value={rangePickerValue}
-            onChange={handleRangePickerChange}
-            style={{
-              width: 256,
-            }}
-          />
-        </div>
-      }
     >
       <div>
         <Bar {...config} style={{height: 200}}/>
