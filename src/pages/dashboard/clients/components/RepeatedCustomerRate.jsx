@@ -1,24 +1,52 @@
 import { Card, Radio, Typography, DatePicker, Row, Col, Divider} from 'antd';
 import numeral from 'numeral';
-import { Donut } from '@ant-design/charts';
+import { Pie } from '@ant-design/charts';
 import React from 'react';
 import styles from '../style.less';
-const {RangePicker} = DatePicker;
 
-const RepeatedCustomerRate = ({loading, repeatedCustomerData}) => {
-  const {data} = React.useMemo(() => {
-    let data = [];
-    const buffer = ['repeated', 'nonRepeated']
-    if (repeatedCustomerData.length > 0){
-      repeatedCustomerData.map((item, index) => {
-        data.push({
-          x: buffer[index],
-          y: item[0]['value']
-        })
-      })
+const getDiffAndPercentage = (cur, prev, symbol) => {
+  const prefix = symbol === 0 ? '' : '€'
+  if (prev > 0) {
+    const diff = symbol === 0 ? cur - prev : (cur - prev).toFixed(2);
+    const percentage = (diff / prev) * 100;
+    return {
+      diff: diff > 0 ? `+${diff}${prefix}` : `${diff}${prefix}`,
+      percentage: percentage > 0 ? `+${percentage.toFixed(2)}` : percentage.toFixed(2)
     }
-    return {data};
-  }, [repeatedCustomerData]);
+  }else {
+    const diff = symbol === 0 ? cur : cur.toFixed(2);
+    const percentage = '∞';
+    return {
+      diff: diff > 0 ? `+${diff}${prefix}` : `${diff}${prefix}`,
+      percentage: percentage
+    }
+  }
+}
+
+const RepeatedCustomerRate = ({loading, data, time}) => {
+  const repeatedRateData = React.useMemo(() => {
+
+    if (Object.keys(data).length > 0){
+      const diffAndPercentage = getDiffAndPercentage(parseFloat(data['current']['notRepeated']), parseFloat(data['prev']['notRepeated']), 0);
+      const _diffAndPercentage = getDiffAndPercentage(parseFloat(data['current']['repeated']), parseFloat(data['prev']['repeated']), 0);
+      return [
+        {
+          x: 'Not Repeated',
+          y: data['current']['notRepeated'],
+          a: diffAndPercentage.diff,
+          b: diffAndPercentage.percentage
+        },
+        {
+          x: 'Repeated',
+          y: data['current']['repeated'],
+          a: _diffAndPercentage.diff,
+          b: _diffAndPercentage.percentage
+        }
+      ]
+    }else {
+      return [];
+    }
+  }, [data]);
 
 
   return (
@@ -30,16 +58,17 @@ const RepeatedCustomerRate = ({loading, repeatedCustomerData}) => {
       style={{
         height: '100%',
       }}
+      size='small'
     >
       <Row gutter={16}>
         <Col span={24}>
-          <Donut
+          <Pie
             forceFit
             height={340}
             radius={0.8}
             angleField="y"
             colorField="x"
-            data={data}
+            data={repeatedRateData}
             legend={{
               visible: false,
             }}
@@ -54,8 +83,20 @@ const RepeatedCustomerRate = ({loading, repeatedCustomerData}) => {
                 fontSize: 15
               }
             }}
-            statistic={{
-              visible: false
+            tooltip={{
+              customContent: (title, data) => {
+                return data.length > 0 ?
+                  `<div style="padding: 10px; font-size: 15px"">` +
+                  `${time}`+
+                  `</div>` +
+                  `<div style="padding: 10px; font-size: 15px"">` +
+                  `${data[0]['data']['a']}`+
+                  `</div>` +
+                  `<div style="padding: 10px; font-size: 15px"">` +
+                  `${data[0]['data']['b']}%`+
+                  `</div>`
+                  : ``;
+              }
             }}
           />
         </Col>

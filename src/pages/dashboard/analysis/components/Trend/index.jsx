@@ -12,11 +12,19 @@ const Trend = ({ colorful = true, reverseColor = false, flag, children, classNam
     },
     className,
   );
+  const upColor = {
+    color: 'green',
+    fontSize: 17
+  }
+  const downColor = {
+    color: 'red',
+    fontSize: 17
+  }
   return (
     <div {...rest} className={classString} title={typeof children === 'string' ? children : ''}>
       <span>{children}</span>
       {flag && (
-        <span className={styles[flag]}>
+        <span style={flag === 'up' ? upColor : downColor}>
           {flag === 'up' ? <CaretUpOutlined /> : <CaretDownOutlined />}
         </span>
       )}

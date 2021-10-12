@@ -1,51 +1,141 @@
-import React, {useRef} from 'react';
-import { Suspense, useState } from 'react';
-import {Row, Col, Button, Statistic, Card} from 'antd'
+import React, {Suspense} from 'react';
+import {Row, Col, Card, Tooltip} from 'antd'
 import { GridContent } from '@ant-design/pro-layout';
-import { useRequest } from 'umi';
-import {fakeChartData, getRevenueProfitQty, getTotalValue,getTotalCostIva, getPurchasedOrdersData} from './service';
+import { useRequest, useModel } from 'umi';
+import {fakeChartData, getSalesRevenueProfitQty, getRepairsRevenueProfitQty, getReturnsRevenueProfitQty, getPurchaseOrdersRevenueQty, getTotalData, getInventoryLossesData} from './service';
 import PageLoading from './components/PageLoading';
 import RevenueProfitQtyPanel from "./components/RevenueProfitQtyPanel";
-import PurchaseOrdersPanel from "./components/PurchaseOrdersPanel";
-import RevenueCard from "./components/RevenueCard";
-import IntroduceRow from './components/IntroduceRow'
-import { useModel } from 'umi';
+import RevenueQtyPanel from "./components/RevenueQtyPanel";
 import moment from "moment";
+import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
+import Yuan from "@/pages/dashboard/analysis/utils/Yuan";
+import numeral from "numeral";
+import {InfoCircleOutlined} from "@ant-design/icons";
+import {CardFooter, Comparison} from "@/pages/dashboard/CustomComponent";
+
+const topColResponsiveProps = {
+  xs: 24,
+  sm: 8,
+  md: 8,
+  lg: 8,
+  xl: 8,
+  style: {
+    marginBottom: 24,
+  },
+};
 
 const Analysis = () => {
   const {initialState} = useModel('@@initialState');
   const { loading, data } = useRequest(fakeChartData);
-  const [types, setTypes] = React.useState(['sale']);
+  const [salesRevenueProfitQtyData, setSalesRevenueProfitQtyData] = React.useState([]);
+  const [repairsRevenueProfitQtyData, setRepairsRevenueProfitQtyData] = React.useState([]);
+  const [returnsRevenueProfitQtyData, setReturnsRevenueProfitQtyData] = React.useState([]);
+  const [purchaseOrdersRevenueQtyData, setPurchaseOrdersRevenueQtyData] = React.useState([]);
+  const [totalData, setTotalData] = React.useState({
+    totalRevenue: 0,
+    preTotalRevenue: 0,
+    totalRevenueWithIva: 0,
+    preTotalRevenueWithIva: 0,
+    totalRevenueWithoutIva: 0,
+    preTotalRevenueWithoutIva: 0,
 
-  const [totalValue, setTotalValue] = useState({});
-  const [revenueProfitQtyData, setRevenueProfitQtyData] = useState([])
-  const [purchasedOrdersData, setPurchasedOrdersData] = useState([])
-  const [totalCostIva, setTotalCostIva] = useState({})
+    totalProfit: 0,
+    preTotalProfit: 0,
+    totalProfitWithIva: 0,
+    preTotalProfitWithIva: 0,
+    totalProfitWithoutIva: 0,
+    preTotalProfitWithoutIva: 0,
 
-  const onChangeTypes = list => {
-    setTypes(list);
-  };
+    totalCost: 0,
+    preTotalCost: 0,
+    totalIva: 0,
+    preTotalIva: 0
+  })
+
+  const [elseTotalData, setElseTotalData] = React.useState({
+    totalLosses: 0,
+    preTotalLosses: 0
+  })
+
+  const {totalRevenue, preTotalRevenue, totalRevenueWithIva, preTotalRevenueWithIva,
+    totalRevenueWithoutIva, preTotalRevenueWithoutIva, totalProfit, preTotalProfit,
+    totalProfitWithIva, preTotalProfitWithIva, totalProfitWithoutIva, preTotalProfitWithoutIva,
+    totalCost, preTotalCost, totalIva, preTotalIva} = totalData;
+  const {totalLosses, preTotalLosses} = elseTotalData;
 
   const store = initialState.store;
   const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
   const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
-  React.useEffect(() => {
-    const productTypes = JSON.stringify(types)
-    getRevenueProfitQty(startTime, endTime, store, productTypes).then((res) => {
-      setRevenueProfitQtyData(res)
-    })
-  },[initialState.store, initialState.range, types]);
+
+  const duration = moment(endTime).diff(startTime, 'days');
+  const _startTime = moment(startTime).subtract(duration + 2, 'days').format('YYYY-MM-DD');
+  const _endTime = moment(_startTime).add(duration + 1, 'days').format('YYYY-MM-DD');
 
   React.useEffect(() => {
-    console.log('_+_+_+_+_+', initialState.range)
-    getPurchasedOrdersData(startTime, endTime, store).then((res) => {
-      setPurchasedOrdersData(res)
+    getSalesRevenueProfitQty(startTime, endTime, store).then((res) => {
+      setSalesRevenueProfitQtyData(res)
     })
-    getTotalCostIva(startTime, endTime, store).then((res) => {
-      setTotalCostIva(res)
+    getRepairsRevenueProfitQty(startTime, endTime, store).then((res) => {
+      setRepairsRevenueProfitQtyData(res)
     })
-    getTotalValue(startTime, endTime, store).then((res) => {
-      setTotalValue(res)
+    getReturnsRevenueProfitQty(startTime, endTime, store).then((res) => {
+      setReturnsRevenueProfitQtyData(res)
+    })
+    getPurchaseOrdersRevenueQty(startTime, endTime, store).then((res) => {
+      setPurchaseOrdersRevenueQtyData(res);
+    })
+    getTotalData(startTime, endTime, store).then((res) => {
+      const totalRevenueWithIva = parseFloat(res['current']['sales_revenue_with_iva']) + parseFloat(res['current']['repairs_revenue_with_iva']) - parseFloat(res['current']['returns_revenue_with_iva'])
+      const preTotalRevenueWithIva = parseFloat(res['before']['sales_revenue_with_iva']) + parseFloat(res['before']['repairs_revenue_with_iva']) - parseFloat(res['before']['returns_revenue_with_iva'])
+
+      const totalRevenueWithoutIva = parseFloat(res['current']['sales_revenue_without_iva']) + parseFloat(res['current']['repairs_revenue_without_iva']) - parseFloat(res['current']['returns_revenue_without_iva'])
+      const preTotalRevenueWithoutIva = parseFloat(res['before']['sales_revenue_without_iva']) + parseFloat(res['before']['repairs_revenue_without_iva']) - parseFloat(res['before']['returns_revenue_without_iva'])
+
+      const totalProfitWithIva = parseFloat(res['current']['sales_profit_with_iva']) + parseFloat(res['current']['repairs_profit_with_iva']) - parseFloat(res['current']['returns_profit_with_iva'])
+      const preTotalProfitWithIva = parseFloat(res['before']['sales_profit_with_iva']) + parseFloat(res['before']['repairs_profit_with_iva']) - parseFloat(res['before']['returns_profit_with_iva'])
+
+      const totalProfitWithoutIva = parseFloat(res['current']['sales_profit_without_iva']) + parseFloat(res['current']['repairs_profit_without_iva']) - parseFloat(res['current']['returns_profit_without_iva'])
+      const preTotalProfitWithoutIva = parseFloat(res['before']['sales_profit_without_iva']) + parseFloat(res['before']['repairs_profit_without_iva']) - parseFloat(res['before']['returns_profit_without_iva'])
+
+      const totalRevenue = totalRevenueWithIva + totalRevenueWithoutIva;
+      const preTotalRevenue = preTotalRevenueWithIva + preTotalRevenueWithoutIva;
+
+      const totalProfit = totalProfitWithIva + totalProfitWithoutIva;
+      const preTotalProfit = preTotalProfitWithIva + preTotalProfitWithoutIva;
+
+      const totalCost = parseFloat(res['current']['sales_cost']) + parseFloat(res['current']['repairs_cost']) - parseFloat(res['current']['returns_cost'])
+      const preTotalCost = parseFloat(res['before']['sales_cost']) + parseFloat(res['before']['repairs_cost']) - parseFloat(res['before']['returns_cost'])
+
+      const totalIva = parseFloat(res['current']['sales_iva']) + parseFloat(res['current']['repairs_iva']) - parseFloat(res['current']['returns_iva'])
+      const preTotalIva = parseFloat(res['before']['sales_iva']) + parseFloat(res['before']['repairs_iva']) - parseFloat(res['before']['returns_iva'])
+
+      setTotalData({
+        ...totalData,
+        totalRevenue: totalRevenue,
+        preTotalRevenue: preTotalRevenue,
+        totalRevenueWithIva: totalRevenueWithIva,
+        preTotalRevenueWithIva: preTotalRevenueWithIva,
+        totalRevenueWithoutIva: totalRevenueWithoutIva,
+        preTotalRevenueWithoutIva: preTotalRevenueWithoutIva,
+        totalProfit: totalProfit,
+        preTotalProfit: preTotalProfit,
+        totalProfitWithIva: totalProfitWithIva,
+        preTotalProfitWithIva: preTotalProfitWithIva,
+        totalProfitWithoutIva: totalProfitWithoutIva,
+        preTotalProfitWithoutIva: preTotalProfitWithoutIva,
+        totalCost: totalCost,
+        preTotalCost: preTotalCost,
+        totalIva: totalIva,
+        preTotalIva: preTotalIva,
+      })
+    })
+    getInventoryLossesData(startTime, endTime, store, 'totalLosses').then((res) => {
+      console.log('.....................', res)
+      setElseTotalData({
+        ...elseTotalData,
+        totalLosses: res['current'],
+        preTotalLosses: res['prev']
+      })
     })
   },[initialState])
 
@@ -53,57 +143,250 @@ const Analysis = () => {
     <GridContent>
       <>
         <Suspense fallback={<PageLoading />}>
+          <Row gutter={24}>
+            <Col {...topColResponsiveProps}>
+              <ChartCard
+                bordered={false}
+                title="Total Revenue"
+                action={
+                  <Tooltip
+                    title={
+                      <Comparison current={totalRevenue} prev={preTotalRevenue} _startTime={_startTime} _endTime={_endTime}/>
+                    }
+                  >
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                }
+                loading={loading}
+                total={() => <Yuan>{totalRevenue}</Yuan>}
+                footer={<CardFooter current={totalRevenue} prev={preTotalRevenue}/>}
+                contentHeight={46}
+              />
+            </Col>
+
+            <Col {...topColResponsiveProps}>
+              <ChartCard
+                bordered={false}
+                title="Total Revenue with IVA"
+                action={
+                  <Tooltip
+                    title={
+                      <Comparison current={totalRevenueWithIva} prev={preTotalRevenueWithIva} _startTime={_startTime} _endTime={_endTime}/>
+                    }
+                  >
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                }
+                loading={loading}
+                total={() => <Yuan>{totalRevenueWithIva}</Yuan>}
+                footer={<CardFooter current={totalRevenueWithIva} prev={preTotalRevenueWithIva}/>}
+                contentHeight={46}
+              />
+            </Col>
+            <Col {...topColResponsiveProps}>
+              <ChartCard
+                bordered={false}
+                title="Total Revenue without IVA"
+                action={
+                  <Tooltip
+                    title={
+                      <Comparison current={totalRevenueWithoutIva} prev={preTotalRevenueWithoutIva} _startTime={_startTime} _endTime={_endTime}/>
+                    }
+                  >
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                }
+                loading={loading}
+                total={() => <Yuan>{totalRevenueWithoutIva}</Yuan>}
+                footer={<CardFooter current={totalRevenueWithoutIva} prev={preTotalRevenueWithoutIva}/>}
+                contentHeight={46}
+              />
+            </Col>
+          </Row>
+          <Row gutter={24}>
+            <Col {...topColResponsiveProps}>
+              <ChartCard
+                bordered={false}
+                title="Total Cost of Goods"
+                action={
+                  <Tooltip
+                    title={
+                      <Comparison current={totalCost} prev={preTotalCost} _startTime={_startTime} _endTime={_endTime}/>
+                    }
+                  >
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                }
+                loading={loading}
+                total={() => <Yuan>{totalCost}</Yuan>}
+                footer={<CardFooter current={totalCost} prev={preTotalCost}/>}
+                contentHeight={46}
+              />
+            </Col>
+
+            <Col {...topColResponsiveProps}>
+              <ChartCard
+                bordered={false}
+                title="Total IVA"
+                action={
+                  <Tooltip
+                    title={
+                      <Comparison current={totalIva} prev={preTotalIva} _startTime={_startTime} _endTime={_endTime}/>
+                    }
+                  >
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                }
+                loading={loading}
+                total={() => <Yuan>{totalIva}</Yuan>}
+                footer={<CardFooter current={totalIva} prev={preTotalIva}/>}
+                contentHeight={46}
+              />
+            </Col>
+
+            <Col {...topColResponsiveProps}>
+              <ChartCard
+                bordered={false}
+                title="Total Losses"
+                action={
+                  <Tooltip
+                    title={
+                      <Comparison current={totalLosses} prev={preTotalLosses} _startTime={_startTime} _endTime={_endTime}/>
+                    }
+                  >
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                }
+                loading={loading}
+                total={() => <Yuan>{totalLosses}</Yuan>}
+                footer={<CardFooter current={totalLosses} prev={preTotalLosses}/>}
+                contentHeight={46}
+              />
+            </Col>
+
+          </Row>
+          <Row gutter={24}>
+            <Col {...topColResponsiveProps}>
+              <ChartCard
+                bordered={false}
+                title="Total Profit"
+                action={
+                  <Tooltip
+                    title={
+                      <Comparison current={totalProfit} prev={preTotalProfit} _startTime={_startTime} _endTime={_endTime}/>
+                    }
+                  >
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                }
+                loading={loading}
+                total={() => <Yuan>{totalProfit}</Yuan>}
+                footer={<CardFooter current={totalProfit} prev={preTotalProfit}/>}
+                contentHeight={46}
+              />
+            </Col>
+
+            <Col {...topColResponsiveProps}>
+              <ChartCard
+                bordered={false}
+                title="Total Profit with IVA"
+                action={
+                  <Tooltip
+                    title={
+                      <Comparison current={totalProfitWithIva} prev={preTotalProfitWithIva} _startTime={_startTime} _endTime={_endTime}/>
+                    }
+                  >
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                }
+                loading={loading}
+                total={() => <Yuan>{totalProfitWithIva}</Yuan>}
+                footer={<CardFooter current={totalProfitWithIva} prev={preTotalProfitWithIva}/>}
+                contentHeight={46}
+              />
+            </Col>
+            <Col {...topColResponsiveProps}>
+              <ChartCard
+                bordered={false}
+                title="Total Profit without IVA"
+                action={
+                  <Tooltip
+                    title={
+                      <Comparison current={totalProfitWithoutIva} prev={preTotalProfitWithoutIva} _startTime={_startTime} _endTime={_endTime}/>
+                    }
+                  >
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                }
+                loading={loading}
+                total={() => <Yuan>{totalProfitWithoutIva}</Yuan>}
+                footer={<CardFooter current={totalProfitWithoutIva} prev={preTotalProfitWithoutIva}/>}
+                contentHeight={46}
+              />
+            </Col>
+          </Row>
+        </Suspense>
+        <Suspense fallback={<PageLoading />}>
           <Card
             loading={loading}
-            title={'Revenue / Profit / Quantity'}
+            title={'Sales'}
             bordered={false}
             bodyStyle={{
               padding: 24,
-              marginBottom: 24
+              marginBottom: 24,
             }}
+            size='small'
           >
             <RevenueProfitQtyPanel
-              revenueProfitQtyData={revenueProfitQtyData}
-              checkedList={types}
-              onChangeList={onChangeTypes}
+              revenueProfitQtyData={salesRevenueProfitQtyData}
             />
           </Card>
         </Suspense>
-
         <Suspense fallback={<PageLoading />}>
           <Card
             loading={loading}
-            title={'Revenue and Quantity of Purchase Orders'}
+            title={'Repairs'}
             bordered={false}
             bodyStyle={{
               padding: 24,
               marginBottom: 24
             }}
+            size='small'
           >
-            <PurchaseOrdersPanel
-              purchasedOrdersData={purchasedOrdersData}
+            <RevenueProfitQtyPanel
+              revenueProfitQtyData={repairsRevenueProfitQtyData}
             />
           </Card>
         </Suspense>
-
-        <Suspense fallback={<PageLoading />}>
-          <IntroduceRow
-            loading={loading}
-            visitData={totalCostIva}
-          />
-        </Suspense>
-
         <Suspense fallback={<PageLoading />}>
           <Card
             loading={loading}
+            title={'Credit Notes'}
             bordered={false}
             bodyStyle={{
               padding: 24,
               marginBottom: 24
             }}
+            size='small'
           >
-            <RevenueCard
-              totalValue={totalValue}
+            <RevenueProfitQtyPanel
+              revenueProfitQtyData={returnsRevenueProfitQtyData}
+            />
+          </Card>
+        </Suspense>
+        <Suspense fallback={<PageLoading />}>
+          <Card
+            loading={loading}
+            title={'Purchase Orders'}
+            bordered={false}
+            bodyStyle={{
+              padding: 24,
+              marginBottom: 24
+            }}
+            size='small'
+          >
+            <RevenueQtyPanel
+              revenueQtyData={purchaseOrdersRevenueQtyData}
             />
           </Card>
         </Suspense>

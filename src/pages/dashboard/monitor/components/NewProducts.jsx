@@ -4,23 +4,37 @@ import numeral from 'numeral';
 
 import styles from '../style.less';
 
-const NewProducts = ({loading, value}) => (
-  <Card
-    loading={loading}
-    className={styles.salesCard}
-    bordered={false}
-    title="Number of new products"
-    style={{
-      height: '100%',
-    }}
-  >
-    <div style={{display: 'flex', justifyContent: 'center'}}>
-      <Statistic
-        value={value}
-        valueStyle={{ color: '#3f8600' }}
-      />
-    </div>
-  </Card>
-);
+const NewProducts = ({loading, value}) => {
+  const products = React.useMemo(() => {
+    return Object.keys(value).length !== 0 ? {
+      current: value['current']['count'],
+      prev: value['prev']['count']
+    } : null
+  }, [value])
+  return (
+    <>
+      <Card
+        loading={loading}
+        className={styles.salesCard}
+        bordered={false}
+        title="Number of new products"
+        style={{
+          height: '100%',
+        }}
+        size='small'
+      >
+        {
+          products ? (
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+              {products.current} ({products.current - products.prev})
+            </div>
+          ) : (
+            <div></div>
+          )
+        }
+      </Card>
+    </>
+  )
+}
 
 export default NewProducts;

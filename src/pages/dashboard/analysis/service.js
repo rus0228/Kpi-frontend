@@ -2,16 +2,22 @@ import { request } from 'umi';
 export async function fakeChartData() {
   return request('/api/fake_analysis_chart_data');
 }
-export async function getRevenueProfitQty(startTime, endTime, store, productTypes){
-  return await request(`/api/getRevenueProfitQty?startTime=${startTime}&endTime=${endTime}&productTypes=${productTypes}&store=${store}`);
+export async function getSalesRevenueProfitQty(startTime, endTime, store){
+  return await request(`/api/getSalesRevenueProfitQty?startTime=${startTime}&endTime=${endTime}&store=${store}`);
 }
-export async function getTotalCostIva(startTime, endTime, store){
-  return await request(`/api/getTotalCostIva?startTime=${startTime}&endTime=${endTime}&store=${store}`);
+export async function getRepairsRevenueProfitQty(startTime, endTime, store){
+  return await request(`/api/getRepairsRevenueProfitQty?startTime=${startTime}&endTime=${endTime}&store=${store}`);
 }
-export async function getTotalValue(startTime, endTime, store){
-  return request(`/api/getTotalValue?startTime=${startTime}&endTime=${endTime}&store=${store}`);
+export async function getReturnsRevenueProfitQty(startTime, endTime, store){
+  return await request(`/api/getReturnsRevenueProfitQty?startTime=${startTime}&endTime=${endTime}&store=${store}`);
+}
+export async function getPurchaseOrdersRevenueQty(startTime, endTime, store){
+  return await request(`/api/getPurchaseOrdersRevenueQty?startTime=${startTime}&endTime=${endTime}&store=${store}`);
+}
+export async function getTotalData(startTime, endTime, store){
+  return await request(`/api/getTotalData?startTime=${startTime}&endTime=${endTime}&store=${store}`);
 }
 
-export async function getPurchasedOrdersData(startTime, endTime, store){
-  return await request(`/api/getPurchasedOrdersData?startTime=${startTime}&endTime=${endTime}&store=${store}`)
+export async function getInventoryLossesData(startTime, endTime, store, kind) {
+  return request(`/api/getInventoryLossesData?startTime=${startTime}&endTime=${endTime}&store=${store}&kind=${kind}`);
 }

@@ -1,6 +1,6 @@
 import { Card, Radio, Typography, DatePicker } from 'antd';
 import numeral from 'numeral';
-import { Donut } from '@ant-design/charts';
+import { Pie } from '@ant-design/charts';
 import React from 'react';
 import styles from '../style.less';
 
@@ -22,9 +22,10 @@ const NumRepairs = ({loading, repairTypeData}) => {
       style={{
         height: '100%',
       }}
+      size='small'
     >
       <div>
-        <Donut
+        <Pie
           forceFit
           height={340}
           radius={0.8}
@@ -41,6 +42,9 @@ const NumRepairs = ({loading, repairTypeData}) => {
               // eslint-disable-next-line no-underscore-dangle
               return `${item._origin.x}: ${numeral(item._origin.y).format('0,0')}`;
             },
+            style: {
+              fontSize: 15
+            }
           }}
           statistic={{
             totalLabel: 'Total',

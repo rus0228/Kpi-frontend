@@ -1,62 +1,54 @@
 import React from 'react'
-import { GroupedColumnLine } from '@ant-design/charts';
-import {Row, Col, Radio, DatePicker, Checkbox, Divider} from 'antd';
-const CheckboxGroup = Checkbox.Group;
-const plainTypes = ['sale', 'repair', 'return']
-const RevenueProfitQtyPanel = ({revenueProfitQtyData, checkedList, onChangeList}) => {
+import {DualAxes} from '@ant-design/charts';
+import {Row, Col} from 'antd';
+
+const RevenueProfitQtyPanel = ({revenueProfitQtyData}) => {
   const {revenueData, profitData, quantityData} = React.useMemo(() => {
     let revenueData = []
     let profitData = []
     let quantityData = [];
-    Object.keys(revenueProfitQtyData).map((key, index) => {
-      let revenue = 0, profit = 0, quantity = 0;
-      revenueProfitQtyData[key].map((item) => {
-        if (item['product'] === 'sales' || item['product'] === 'repairs'){
-          revenue += parseFloat(item['revenue'])
-          profit += parseFloat(item['profit'])
-          quantity += parseFloat(item['quantity'])
-        }
-        if (item['product'] === 'returns'){
-          revenue -= parseFloat(item['revenue'])
-          profit -= parseFloat(item['profit'])
-          quantity -= parseFloat(item['quantity'])
-        }
-      })
+    revenueProfitQtyData.map((item) => {
       revenueData.push({
-        time: key,
-        value: revenue,
+        time: item['time'],
+        value: parseFloat(item['revenue']),
         type: 'revenue'
       })
       profitData.push({
-        time: key,
-        value: profit,
+        time: item['time'],
+        value: parseFloat(item['profit']),
         type: 'profit'
       })
       quantityData.push({
-        time: key,
-        quantity: quantity
+        time: item['time'],
+        quantity: parseFloat(item['quantity'])
       })
     })
-
     return {revenueData, profitData, quantityData}
   }, [revenueProfitQtyData])
   const revenueProfitData = [...revenueData, ...profitData]
   const config = {
-    data : [ revenueProfitData , quantityData ] ,
-    xField : 'time' ,
-    yField : [ 'value' , 'quantity' ] ,
-    columnGroupField : 'type' ,
-  } ;
+    data: [revenueProfitData, quantityData],
+    xField: 'time',
+    yField: ['value', 'quantity'],
+    geometryOptions: [
+      {
+        geometry: 'column',
+        isGroup: true,
+        seriesField: 'type',
+      },
+      {
+        geometry: 'line',
+        lineStyle: { lineWidth: 2 },
+        smooth: true
+      },
+    ],
+    height: 260
+  };
   return (
     <>
-      <Row gutter={16} style={{marginBottom: 24}}>
-        <Col span={24}>
-          <CheckboxGroup options={plainTypes} value={checkedList} onChange={onChangeList} />
-        </Col>
-      </Row>
       <Row gutter={16}>
         <Col span={24}>
-          <GroupedColumnLine { ... config }/>
+          <DualAxes {...config}/>
         </Col>
       </Row>
     </>

@@ -6,7 +6,3 @@ export async function fakeChartData() {
 export async function getSellPhoneData(startTime, endTime) {
   return request(`/api/getSellPhoneData?startTime=${startTime}&endTime=${endTime}`)
 }
-
-export async function getCustomSellPhoneData(startTime, endTime){
-  return request(`/api/getCustomSellPhoneData?startTime=${startTime}&endTime=${endTime}`)
-}

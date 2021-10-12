@@ -16,17 +16,21 @@ const Purchases = () => {
   const [purchasedSupplierData, setPurchasedSupplierData] = useState([]);
   const [purchaseData, setPurchaseData] = useState([])
 
+  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
+  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
+  const store = initialState.store;
+  const duration = moment(endTime).diff(startTime, 'days');
+  const _startTime = moment(startTime).subtract(duration + 2, 'days').format('YYYY-MM-DD');
+  const _endTime = moment(_startTime).add(duration + 1, 'days').format('YYYY-MM-DD');
+
   React.useEffect(() => {
-    const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
-    const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
-    const store = initialState.store;
     getPurchaseData(startTime, endTime, store).then((res) => {
       setPurchaseData(res)
     })
-    getMostFrequentSuppliers(startTime, endTime).then((res) => {
+    getMostFrequentSuppliers(startTime, endTime, store).then((res) => {
       setFrequentSupplierData(res)
     })
-    getMostPurchasedSuppliers(startTime, endTime).then((res) => {
+    getMostPurchasedSuppliers(startTime, endTime, store).then((res) => {
       setPurchasedSupplierData(res)
     })
   }, [initialState])
@@ -46,19 +50,23 @@ const Purchases = () => {
         </Row>
 
         <Row gutter={24} style={{marginTop: 24}}>
-          <Col xl={12} lg={24} md={24} sm={24} xs={24}>
+          <Col xl={24} lg={24} md={24} sm={24} xs={24}>
             <Suspense fallback={null}>
               <FrequentSupplier
                 loading={loading}
                 frequentSupplierData={frequentSupplierData}
+                time={`${_startTime} ~ ${_endTime}`}
               />
             </Suspense>
           </Col>
-          <Col xl={12} lg={24} md={24} sm={24} xs={24}>
+        </Row>
+        <Row gutter={24} style={{marginTop: 24}}>
+          <Col xl={24} lg={24} md={24} sm={24} xs={24}>
             <Suspense fallback={null}>
               <PurchasedSupplier
                 loading={loading}
                 purchasedSupplierData={purchasedSupplierData}
+                time={`${_startTime} ~ ${_endTime}`}
               />
             </Suspense>
           </Col>

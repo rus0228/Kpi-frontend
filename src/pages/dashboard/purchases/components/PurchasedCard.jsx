@@ -1,5 +1,5 @@
-import { Card, Col, DatePicker, Row, Tabs } from 'antd';
-import {Column, ColumnLine, Donut} from '@ant-design/charts';
+import {Card, Col, DatePicker, Empty, Row, Tabs} from 'antd';
+import {DualAxes} from '@ant-design/charts';
 import numeral from 'numeral';
 import styles from '../style.less';
 import React from "react";
@@ -7,30 +7,27 @@ const { RangePicker } = DatePicker;
 
 const PurchasedCard = ({purchaseData, loading}) => {
   const config = React.useMemo(() => {
-    const uvData = []
-    const transformData = []
+    const data = []
     if (purchaseData.length > 0){
       purchaseData.forEach((item) => {
-        uvData.push({
+        data.push({
           month: item['month'],
-          value: parseFloat(item['value'])
-        });
-        transformData.push({
-          month: item['month'],
+          value: parseFloat(item['value']),
           quantity: parseInt(item['quantity'])
-        })
+        });
       })
     }
     return {
-      data : [ uvData, transformData ],
+      data : [ data, data ],
       xField : 'month',
       yField : [ 'value', 'quantity' ],
-      columnConfig : { color : '#586bce' },
-      lineConfig : {
-        color : '#29cae4',
-        point : { visible : true },
-        label : { visible : true },
-      }
+      geometryOptions: [
+        { geometry: 'column' },
+        {
+          geometry: 'line',
+          lineStyle: { lineWidth: 2 },
+        },
+      ],
     }
   }, [purchaseData]);
 
@@ -44,7 +41,14 @@ const PurchasedCard = ({purchaseData, loading}) => {
         height: '100%',
       }}
     >
-      <ColumnLine { ...config }/>
+      {
+        config.data[0].length > 0 ? (
+          <DualAxes { ...config }/>
+        ) : (
+          <Empty/>
+        )
+      }
+
     </Card>
   )
 }

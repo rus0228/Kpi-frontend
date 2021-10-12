@@ -2,7 +2,7 @@ const Settings = {
   navTheme: 'dark',
   // 拂晓蓝
   primaryColor: '#1890ff',
-  contentWidth: 'Fluid',
+  contentWidth: 'Fixed',
   fixedHeader: true,
   splitMenus: false,
   fixSiderbar: true,

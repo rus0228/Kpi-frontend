@@ -1,6 +1,6 @@
 import { Card, Radio, Typography, DatePicker } from 'antd';
 import numeral from 'numeral';
-import { Donut } from '@ant-design/charts';
+import { Pie } from '@ant-design/charts';
 import React from 'react';
 import styles from '../style.less';
 const {RangePicker} = DatePicker;
@@ -22,9 +22,10 @@ const NumRepairs = ({loading, NumberOfRepairsData}) => {
       style={{
         height: '100%',
       }}
+      size='small'
     >
       <div>
-        <Donut
+        <Pie
           forceFit
           height={340}
           radius={0.8}
