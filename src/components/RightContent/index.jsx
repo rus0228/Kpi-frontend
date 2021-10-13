@@ -61,7 +61,7 @@ const GlobalHeaderRight = () => {
         value={range}
         onChange={handleRangePickerChange}
       />
-      <Select value={store} onChange={onStoreChange}>
+      <Select value={store} style={{width: 75}} onChange={onStoreChange}>
         <Option value="0">All</Option>
         <Option value="1">Store 1</Option>
         <Option value="2">Store 2</Option>
