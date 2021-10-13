@@ -37,14 +37,14 @@ export const getDiffAndPercentage = (cur, prev, symbol) => {
     const percentage = (diff / prev) * 100;
     return {
       diff: diff > 0 ? `+${diff}${prefix}` : `${diff}${prefix}`,
-      percentage: percentage > 0 ? `+${percentage.toFixed(2)}` : percentage.toFixed(2)
+      percentage: percentage > 0 ? `+${percentage.toFixed(2)}%` : `${percentage.toFixed(2)}%`
     }
   }else {
     const diff = symbol === 0 ? cur : cur.toFixed(2);
     const percentage = '∞';
     return {
       diff: diff > 0 ? `+${diff}${prefix}` : `${diff}${prefix}`,
-      percentage: percentage
+      percentage: 'no previous records'
     }
   }
 }

@@ -75,7 +75,7 @@ const RepeatedCustomerRate = ({loading, data, time}) => {
                   `${data[0]['data']['a']}`+
                   `</div>` +
                   `<div style="padding: 10px; font-size: 15px"">` +
-                  `${data[0]['data']['b']}%`+
+                  `${data[0]['data']['b']}`+
                   `</div>`
                   : ``;
               }
