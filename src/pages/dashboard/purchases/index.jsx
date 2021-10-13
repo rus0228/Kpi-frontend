@@ -7,7 +7,7 @@ import {fakeChartData, getMostFrequentSuppliers, getMostPurchasedSuppliers, getP
 import FrequentSupplier from "./components/FrequentSupplier";
 import PurchasedSupplier from "./components/PurchasedSupplier";
 import PurchasedCard from "./components/PurchasedCard";
-import moment from "moment";
+import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";
 
 const Purchases = () => {
   const {initialState} = useModel('@@initialState');
@@ -16,21 +16,17 @@ const Purchases = () => {
   const [purchasedSupplierData, setPurchasedSupplierData] = useState([]);
   const [purchaseData, setPurchaseData] = useState([])
 
-  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
-  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
-  const store = initialState.store;
-  const duration = moment(endTime).diff(startTime, 'days');
-  const _startTime = moment(startTime).subtract(duration + 2, 'days').format('YYYY-MM-DD');
-  const _endTime = moment(_startTime).add(duration + 1, 'days').format('YYYY-MM-DD');
+  const changedStates = getChangedGlobalStates(initialState);
+  const {startTime, endTime, _startTime, _endTime, store} = changedStates;
 
   React.useEffect(() => {
-    getPurchaseData(startTime, endTime, store).then((res) => {
+    getPurchaseData(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setPurchaseData(res)
     })
-    getMostFrequentSuppliers(startTime, endTime, store).then((res) => {
+    getMostFrequentSuppliers(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setFrequentSupplierData(res)
     })
-    getMostPurchasedSuppliers(startTime, endTime, store).then((res) => {
+    getMostPurchasedSuppliers(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setPurchasedSupplierData(res)
     })
   }, [initialState])

@@ -7,30 +7,20 @@ import {Pie} from "@ant-design/charts";
 import numeral from "numeral";
 import {getCustomerEvaluation, fakeChartData} from "./service";
 import moment from "moment";
+import {getChangedGlobalStates, getDiffAndPercentage} from "@/pages/dashboard/CustomUtils";
 
-const getDiffAndPercentage = (cur, prev, symbol) => {
-  const prefix = symbol === 0 ? '' : '€'
-  const diff = symbol === 0 ? cur - prev : (cur - prev).toFixed(2);
-  const percentage = (diff / prev) * 100;
-  return {
-    diff: diff > 0 ? `+${diff}${prefix}` : `${diff}${prefix}`,
-    percentage: percentage > 0 ? `+${percentage.toFixed(2)}` : percentage.toFixed(2)
-  }
-}
 
 const Satisfaction = () => {
   const {initialState} = useModel('@@initialState');
   const { loading } = useRequest(fakeChartData);
-  const [evaluationData, setEvaluationData] = useState([])
-  const store = initialState.store;
-  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
-  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
-  const duration = moment(endTime).diff(startTime, 'days');
-  const _startTime = moment(startTime).subtract(duration + 2, 'days').format('YYYY-MM-DD');
-  const _endTime = moment(_startTime).add(duration + 1, 'days').format('YYYY-MM-DD');
+  const [evaluationData, setEvaluationData] = useState([]);
+
+  const changedStates = getChangedGlobalStates(initialState);
+  const {startTime, endTime, _startTime, _endTime, store} = changedStates;
+
   const time = `${_startTime} ~ ${_endTime}`;
   React.useEffect(() => {
-    getCustomerEvaluation(startTime, endTime, store).then((res) => {
+    getCustomerEvaluation(startTime, endTime, _startTime, _endTime, store).then((res) => {
       const data = []
       res.map((item) => {
         const diffAndPercentage = getDiffAndPercentage(parseFloat(item['current']), parseFloat(item['prev']), 0)

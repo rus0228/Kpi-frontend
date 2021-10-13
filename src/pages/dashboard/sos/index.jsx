@@ -1,17 +1,13 @@
 import {Col, Row, Card, Statistic, Tooltip} from 'antd';
 import {useModel, useRequest} from 'umi';
 import { GridContent } from '@ant-design/pro-layout';
-import React, {Suspense, useRef, useState} from "react";
-import styles from "@/pages/dashboard/repairs/style.less";
+import React, {Suspense} from "react";
 import {fakeChartData, getSosData} from "./service";
-import SosBarPanel from "./components/SosBarPanel";
-import moment from "moment";
-import PageLoading from "@/pages/dashboard/analysis/components/PageLoading";
-import numeral from "numeral";
 import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import Yuan from "@/pages/dashboard/analysis/utils/Yuan";
 import {CardFooter, Comparison, ComparisonInt, CardFooterTime, ComparisonTime, Time} from "@/pages/dashboard/CustomComponent";
+import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";
 
 const Sos = () => {
   const {initialState} = useModel('@@initialState');
@@ -28,15 +24,12 @@ const Sos = () => {
     _totalRevenue: 0,
   });
   const {receivedOrders, shippedOrders, averageTime, totalRevenue, _receivedOrders, _shippedOrders, _averageTime, _totalRevenue} = sosData
-  const store = initialState.store;
-  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
-  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
-  const duration = moment(endTime).diff(startTime, 'days');
-  const _startTime = moment(startTime).subtract(duration + 2, 'days').format('YYYY-MM-DD');
-  const _endTime = moment(_startTime).add(duration + 1, 'days').format('YYYY-MM-DD');
+
+  const changedStates = getChangedGlobalStates(initialState);
+  const {startTime, endTime, _startTime, _endTime, store} = changedStates;
 
   React.useEffect(() => {
-    getSosData(startTime, endTime, store).then((res) => {
+    getSosData(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setSosData({
         ...sosData,
         receivedOrders: res['current']['receivedOrders'],

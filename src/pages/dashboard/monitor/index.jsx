@@ -5,10 +5,10 @@ import { GridContent } from '@ant-design/pro-layout';
 import {Suspense, useState} from "react";
 import {fakeChartData, getNumberOfNewProducts, getBestSellingProductsData} from "./service";
 import BestSelling from './components/BestSelling';
-import moment from "moment";
 import {CardFooter, Comparison, ComparisonInt} from "@/pages/dashboard/CustomComponent";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
+import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";
 
 const Monitor = () => {
   const {initialState} = useModel('@@initialState');
@@ -16,22 +16,18 @@ const Monitor = () => {
   const [newProducts, setNewProducts] = useState([]);
   const [bestSellingData, setBestSellingData] = useState([]);
 
-  const store = initialState.store;
-  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
-  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
-  const duration = moment(endTime).diff(startTime, 'days');
-  const _startTime = moment(startTime).subtract(duration + 2, 'days').format('YYYY-MM-DD');
-  const _endTime = moment(_startTime).add(duration + 1, 'days').format('YYYY-MM-DD');
+  const changedStates = getChangedGlobalStates(initialState);
+  const {startTime, endTime, _startTime, _endTime, store} = changedStates;
 
   React.useEffect(() => {
-    getBestSellingProductsData(startTime, endTime, store).then((res) => {
+    getBestSellingProductsData(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setBestSellingData(res);
     })
-    getNumberOfNewProducts(startTime, endTime, store).then((res) => {
+    getNumberOfNewProducts(startTime, endTime, _startTime, _endTime, store).then((res) => {
       console.log(res);
       setNewProducts(res);
     })
-  }, [initialState.store, initialState.range]);
+  }, [initialState]);
 
   return (
     <GridContent>

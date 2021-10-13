@@ -5,32 +5,33 @@ import React, { Suspense, useState } from "react";
 import MostInteractionUsers from "./components/MostInteractionUsers";
 import { fakeChartData, getRepairType, getMostInteractionData, getRepairData } from "./service";
 import PageLoading from "@/pages/dashboard/analysis/components/PageLoading";
-import moment from "moment";
 import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import Yuan from "@/pages/dashboard/analysis/utils/Yuan";
 import numeral from "numeral";
 import {CardFooter, Comparison, ComparisonInt, CardFooterTime, ComparisonTime, Time} from "@/pages/dashboard/CustomComponent";
 import {Pie} from "@ant-design/charts";
+import {getChangedGlobalStates, getDiffAndPercentage} from "@/pages/dashboard/CustomUtils";
 
-const getDiffAndPercentage = (cur, prev, symbol) => {
-  const prefix = symbol === 0 ? '' : '€'
-  const diff = symbol === 0 ? cur - prev : (cur - prev).toFixed(2);
-  const percentage = (diff / prev) * 100;
-  return {
-    diff: diff > 0 ? `+${diff}${prefix}` : `${diff}${prefix}`,
-    percentage: percentage > 0 ? `+${percentage.toFixed(2)}` : percentage.toFixed(2)
-  }
-}
+const responsiveProps = {
+  xs: 24,
+  sm: 24,
+  md: 24,
+  lg: 24,
+  xl: 8
+};
+
+const _responsiveProps = {
+  xs: 24,
+  sm: 24,
+  md: 24,
+  lg: 24,
+  xl: 12
+};
+
 const Monitor = () => {
   const {initialState} = useModel('@@initialState');
   const { loading, data } = useRequest(fakeChartData);
-  const store = initialState.store;
-  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
-  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
-  const duration = moment(endTime).diff(startTime, 'days');
-  const _startTime = moment(startTime).subtract(duration + 2, 'days').format('YYYY-MM-DD');
-  const _endTime = moment(_startTime).add(duration + 1, 'days').format('YYYY-MM-DD');
   const [repairTypeData, setRepairTypeData] = useState({
     repair: 0,
     warranty: 0,
@@ -58,8 +59,11 @@ const Monitor = () => {
     _totalRepairs, _completedRepairs, _cancelledRepairs, _averageTime, _averageValue
   } = repairData
 
+  const changedStates = getChangedGlobalStates(initialState);
+  const {startTime, endTime, _startTime, _endTime, store} = changedStates;
+
   React.useEffect(() => {
-    getRepairData(startTime, endTime, store).then((res) => {
+    getRepairData(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setRepairData({
         ...repairData,
         totalRepairs: res['current']['totalRepairs'],
@@ -74,7 +78,7 @@ const Monitor = () => {
         _averageValue: parseFloat(res['prev']['averageValue'])
       })
     })
-    getRepairType(startTime, endTime, store).then((res) => {
+    getRepairType(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setRepairTypeData({
         ...repairTypeData,
         repair: res['repair'],
@@ -85,7 +89,7 @@ const Monitor = () => {
         _sos: res['_sos']
       });
     })
-    getMostInteractionData(startTime, endTime, store).then((res) => {
+    getMostInteractionData(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setMostInteractionData(res);
     })
   }, [initialState])
@@ -94,12 +98,13 @@ const Monitor = () => {
   const warrantyDiffAndPercentage = getDiffAndPercentage(warranty, _warranty, 0);
   const sosDiffAndPercentage = getDiffAndPercentage(sos, _sos, 0);
   const time = `${_startTime} ~ ${_endTime}`;
+
   return (
     <GridContent>
       <>
         <Suspense fallback={<PageLoading />}>
           <Row gutter={[24, 24]}>
-            <Col span={8}>
+            <Col {...responsiveProps}>
               <ChartCard
                 bordered={false}
                 title="Number of Repairs"
@@ -119,7 +124,7 @@ const Monitor = () => {
               />
             </Col>
 
-            <Col span={8}>
+            <Col {...responsiveProps}>
               <ChartCard
                 bordered={false}
                 title="Number of Repairs Completed"
@@ -138,7 +143,7 @@ const Monitor = () => {
                 contentHeight={46}
               />
             </Col>
-            <Col span={8}>
+            <Col {...responsiveProps}>
               <ChartCard
                 bordered={false}
                 title="Number Of Repairs Without Repair"
@@ -159,7 +164,7 @@ const Monitor = () => {
             </Col>
           </Row>
           <Row gutter={[24,24]} style={{marginTop: 24}}>
-            <Col span={12}>
+            <Col {..._responsiveProps}>
               <ChartCard
                 bordered={false}
                 title="Average Repair Value"
@@ -178,7 +183,7 @@ const Monitor = () => {
                 contentHeight={46}
               />
             </Col>
-            <Col span={12}>
+            <Col {..._responsiveProps}>
               <ChartCard
                 bordered={false}
                 title="Average time between status processing and completed"

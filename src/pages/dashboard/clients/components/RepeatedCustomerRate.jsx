@@ -3,25 +3,7 @@ import numeral from 'numeral';
 import { Pie } from '@ant-design/charts';
 import React from 'react';
 import styles from '../style.less';
-
-const getDiffAndPercentage = (cur, prev, symbol) => {
-  const prefix = symbol === 0 ? '' : '€'
-  if (prev > 0) {
-    const diff = symbol === 0 ? cur - prev : (cur - prev).toFixed(2);
-    const percentage = (diff / prev) * 100;
-    return {
-      diff: diff > 0 ? `+${diff}${prefix}` : `${diff}${prefix}`,
-      percentage: percentage > 0 ? `+${percentage.toFixed(2)}` : percentage.toFixed(2)
-    }
-  }else {
-    const diff = symbol === 0 ? cur : cur.toFixed(2);
-    const percentage = '∞';
-    return {
-      diff: diff > 0 ? `+${diff}${prefix}` : `${diff}${prefix}`,
-      percentage: percentage
-    }
-  }
-}
+import {getDiffAndPercentage} from "@/pages/dashboard/CustomUtils";
 
 const RepeatedCustomerRate = ({loading, data, time}) => {
   const repeatedRateData = React.useMemo(() => {

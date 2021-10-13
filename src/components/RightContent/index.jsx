@@ -13,13 +13,17 @@ const {RangePicker} = DatePicker;
 const {Option} = Select
 const GlobalHeaderRight = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
-
   const [range, setRange] = useState(getTimeDistance('year'));
   const [store, setStore] = useState('0');
-
+  const [compare, setCompare] = useState('lastDuration')
   React.useEffect(() => {
-    setInitialState({...initialState, store: store, range: range})
-  }, [range, store])
+    setInitialState(
+      {...initialState,
+        store: store,
+        range: range,
+        compare: compare
+      })
+  }, [range, store, compare])
 
   if (!initialState || !initialState.settings) {
     return null;
@@ -37,15 +41,27 @@ const GlobalHeaderRight = () => {
   }
 
   const handleRangePickerChange = (value) => {
-    setRange(value)
+    if (value){
+      setRange(value)
+    }else {
+      setRange(getTimeDistance('year'))
+    }
+  }
+
+  const onCompareChange = (value) => {
+    setCompare(value)
   }
   return (
     <Space className={className}>
+      <Select value={compare} onChange={onCompareChange}>
+        <Option value="lastDuration">Last Duration</Option>
+        <Option value="lastYear">Last Year</Option>
+      </Select>
       <RangePicker
         value={range}
         onChange={handleRangePickerChange}
       />
-      <Select value={store} style={{ width: 120 }} onChange={onStoreChange}>
+      <Select value={store} onChange={onStoreChange}>
         <Option value="0">All</Option>
         <Option value="1">Store 1</Option>
         <Option value="2">Store 2</Option>

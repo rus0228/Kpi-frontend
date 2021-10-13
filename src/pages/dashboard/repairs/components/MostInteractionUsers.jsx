@@ -3,15 +3,9 @@ import numeral from 'numeral';
 import { Pie } from '@ant-design/charts';
 import React from 'react';
 import styles from '../style.less';
-const getDiffAndPercentage = (cur, prev, symbol) => {
-  const prefix = symbol === 0 ? '' : '€'
-  const diff = symbol === 0 ? cur - prev : (cur - prev).toFixed(2);
-  const percentage = (diff / prev) * 100;
-  return {
-    diff: diff > 0 ? `+${diff}${prefix}` : `${diff}${prefix}`,
-    percentage: percentage > 0 ? `+${percentage.toFixed(2)}` : percentage.toFixed(2)
-  }
-}
+import {getDiffAndPercentage} from "@/pages/dashboard/CustomUtils";
+
+
 const MostInteractionUsers = ({loading, mostInteractionData, time}) => {
   const data = []
   mostInteractionData.map((item) => {

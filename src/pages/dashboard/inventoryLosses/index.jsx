@@ -10,16 +10,7 @@ import {Pie} from '@ant-design/charts'
 import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
 import Yuan from "@/pages/dashboard/analysis/utils/Yuan";
 import {CardFooter, Comparison} from "@/pages/dashboard/CustomComponent";
-
-const getDiffAndPercentage = (cur, prev, symbol) => {
-  const prefix = symbol === 0 ? '' : '€'
-  const diff = symbol === 0 ? cur - prev : (cur - prev).toFixed(2);
-  const percentage = (diff / prev) * 100;
-  return {
-    diff: diff > 0 ? `+${diff}${prefix}` : `${diff}${prefix}`,
-    percentage: percentage > 0 ? `+${percentage.toFixed(2)}` : percentage.toFixed(2)
-  }
-}
+import {getChangedGlobalStates, getDiffAndPercentage} from "@/pages/dashboard/CustomUtils";
 
 const topColResponsiveProps = {
   xs: 24,
@@ -41,25 +32,22 @@ const InventoryLosses = () => {
     current: lostRma.current + totalLossesWithoutRma.current,
     prev: lostRma.prev + totalLossesWithoutRma.prev
   }
-  const store = initialState.store;
-  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
-  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
 
-  const duration = moment(endTime).diff(startTime, 'days');
-  const _startTime = moment(startTime).subtract(duration + 2, 'days').format('YYYY-MM-DD');
-  const _endTime = moment(_startTime).add(duration + 1, 'days').format('YYYY-MM-DD');
+  const changedStates = getChangedGlobalStates(initialState);
+  const {startTime, endTime, _startTime, _endTime, store} = changedStates;
   const time = `${_startTime} ~ ${_endTime}`;
+
   React.useEffect(() => {
-    getInventoryLossesData(startTime, endTime, store, 'totalRma').then((res) => {
+    getInventoryLossesData(startTime, endTime, _startTime, _endTime, store, 'totalRma').then((res) => {
       setTotalRma({...res})
     })
-    getInventoryLossesData(startTime, endTime, store, 'lostRma').then((res) => {
+    getInventoryLossesData(startTime, endTime, _startTime, _endTime, store, 'lostRma').then((res) => {
       setLostRma({...res})
     })
-    getInventoryLossesData(startTime, endTime, store, 'totalLossesWithRma').then((res) => {
+    getInventoryLossesData(startTime, endTime, _startTime, _endTime, store, 'totalLossesWithRma').then((res) => {
       setTotalLossesWithRma({...res})
     })
-    getInventoryLossesData(startTime, endTime, store, 'totalLossesWithoutRma').then((res) => {
+    getInventoryLossesData(startTime, endTime, _startTime, _endTime, store, 'totalLossesWithoutRma').then((res) => {
       setTotalLossesWithoutRma({...res})
     })
   }, [initialState])

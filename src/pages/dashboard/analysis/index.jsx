@@ -2,22 +2,22 @@ import React, {Suspense} from 'react';
 import {Row, Col, Card, Tooltip} from 'antd'
 import { GridContent } from '@ant-design/pro-layout';
 import { useRequest, useModel } from 'umi';
-import {fakeChartData, getSalesRevenueProfitQty, getRepairsRevenueProfitQty, getReturnsRevenueProfitQty, getPurchaseOrdersRevenueQty, getTotalData, getInventoryLossesData} from './service';
+import {fakeChartData, getSalesRevenueProfitQty, getRepairsRevenueProfitQty,
+  getReturnsRevenueProfitQty, getPurchaseOrdersRevenueQty, getTotalData, getInventoryLossesData} from './service';
 import PageLoading from './components/PageLoading';
 import RevenueProfitQtyPanel from "./components/RevenueProfitQtyPanel";
 import RevenueQtyPanel from "./components/RevenueQtyPanel";
-import moment from "moment";
 import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
 import Yuan from "@/pages/dashboard/analysis/utils/Yuan";
-import numeral from "numeral";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import {CardFooter, Comparison} from "@/pages/dashboard/CustomComponent";
+import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";
 
 const topColResponsiveProps = {
   xs: 24,
-  sm: 8,
-  md: 8,
-  lg: 8,
+  sm: 24,
+  md: 24,
+  lg: 24,
   xl: 8,
   style: {
     marginBottom: 24,
@@ -63,28 +63,23 @@ const Analysis = () => {
     totalCost, preTotalCost, totalIva, preTotalIva} = totalData;
   const {totalLosses, preTotalLosses} = elseTotalData;
 
-  const store = initialState.store;
-  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
-  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
-
-  const duration = moment(endTime).diff(startTime, 'days');
-  const _startTime = moment(startTime).subtract(duration + 2, 'days').format('YYYY-MM-DD');
-  const _endTime = moment(_startTime).add(duration + 1, 'days').format('YYYY-MM-DD');
+  const changedStates = getChangedGlobalStates(initialState);
+  const {startTime, endTime, _startTime, _endTime, store} = changedStates;
 
   React.useEffect(() => {
-    getSalesRevenueProfitQty(startTime, endTime, store).then((res) => {
+    getSalesRevenueProfitQty(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setSalesRevenueProfitQtyData(res)
     })
-    getRepairsRevenueProfitQty(startTime, endTime, store).then((res) => {
+    getRepairsRevenueProfitQty(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setRepairsRevenueProfitQtyData(res)
     })
-    getReturnsRevenueProfitQty(startTime, endTime, store).then((res) => {
+    getReturnsRevenueProfitQty(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setReturnsRevenueProfitQtyData(res)
     })
-    getPurchaseOrdersRevenueQty(startTime, endTime, store).then((res) => {
+    getPurchaseOrdersRevenueQty(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setPurchaseOrdersRevenueQtyData(res);
     })
-    getTotalData(startTime, endTime, store).then((res) => {
+    getTotalData(startTime, endTime, _startTime, _endTime, store).then((res) => {
       const totalRevenueWithIva = parseFloat(res['current']['sales_revenue_with_iva']) + parseFloat(res['current']['repairs_revenue_with_iva']) - parseFloat(res['current']['returns_revenue_with_iva'])
       const preTotalRevenueWithIva = parseFloat(res['before']['sales_revenue_with_iva']) + parseFloat(res['before']['repairs_revenue_with_iva']) - parseFloat(res['before']['returns_revenue_with_iva'])
 
@@ -129,8 +124,7 @@ const Analysis = () => {
         preTotalIva: preTotalIva,
       })
     })
-    getInventoryLossesData(startTime, endTime, store, 'totalLosses').then((res) => {
-      console.log('.....................', res)
+    getInventoryLossesData(startTime, endTime, _startTime, _endTime, store, 'totalLosses').then((res) => {
       setElseTotalData({
         ...elseTotalData,
         totalLosses: res['current'],

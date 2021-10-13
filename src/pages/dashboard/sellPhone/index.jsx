@@ -6,9 +6,9 @@ import {fakeChartData, getSellPhoneData} from "./service";
 import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import Yuan from "@/pages/dashboard/analysis/utils/Yuan";
-import numeral from "numeral";
 import moment from "moment";
 import {CardFooter, Comparison, ComparisonInt, CardFooterTime, ComparisonTime, Time} from "@/pages/dashboard/CustomComponent";
+import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";
 
 const SellPhone = () => {
   const {initialState} = useModel('@@initialState');
@@ -26,18 +26,14 @@ const SellPhone = () => {
     _averageTime: 0,
   });
 
-  const store = initialState.store;
-  const startTime = moment(initialState.range[0]).format('YYYY-MM-DD HH:mm:ss');
-  const endTime = moment(initialState.range[1]).format('YYYY-MM-DD HH:mm:ss');
-  const duration = moment(endTime).diff(startTime, 'days');
-  const _startTime = moment(startTime).subtract(duration + 2, 'days').format('YYYY-MM-DD');
-  const _endTime = moment(_startTime).add(duration + 1, 'days').format('YYYY-MM-DD');
+  const changedStates = getChangedGlobalStates(initialState);
+  const {startTime, endTime, _startTime, _endTime, store} = changedStates;
 
   const {receivedOrders, finishedOrders, totalPaidAmount, averageAmount, averageTime,
     _receivedOrders, _finishedOrders, _totalPaidAmount, _averageAmount, _averageTime} = sellPhoneData
 
   React.useEffect(() => {
-    getSellPhoneData(startTime, endTime).then((res) => {
+    getSellPhoneData(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setSellPhoneData({
         ...sellPhoneData,
         receivedOrders: parseFloat(res['current']['receivedOrders']),
