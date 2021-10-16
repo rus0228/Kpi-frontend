@@ -1,6 +1,6 @@
 import {Card, Radio, Typography, DatePicker, Row, Col, Divider} from 'antd';
 import numeral from 'numeral';
-import {Pie} from '@ant-design/charts';
+import {Pie, Donut} from '@ant-design/charts';
 import React from 'react';
 import styles from '../style.less';
 import {getDiffAndPercentage} from "@/pages/dashboard/CustomUtils";
@@ -53,40 +53,41 @@ const BestSelling = ({loading, bestSellingData, time}) => {
             className={styles.salesCard}
             bordered={false}
             title="Best Selling Products(Quantity)"
-            style={{
-              height: '100%',
-            }}
-            size='small'
+            type='flex'
+            style={{alignItems: 'center'}}
           >
             <Pie
-              forceFit
-              height={340}
               radius={0.8}
               angleField="y"
               colorField="x"
               data={topQuantityData}
               label={{
-                visible: true,
-                type: 'spider',
-                formatter: (text, item) => {
-                  // eslint-disable-next-line no-underscore-dangle
-                  return `${item._origin.x}: ${numeral(item._origin.y).format('0,0')}`;
-                },
+                type: 'outer',
                 style: {
                   fontSize: 15
-                }
+                },
+                formatter: (text, item) => {
+                  return `${numeral(item._origin.y).format('0,0')}`;
+                },
               }}
+              interactions={[{ type: 'element-single-selected' }, { type: 'element-active' }]}
               tooltip={{
                 customContent: (title, data) => {
                   return data.length > 0 ?
-                    `<div style="padding: 10px; font-size: 15px"">` +
-                      `${time}`+
+                    `<div style="padding: 10px; font-size: 15px">` +
+                    `${data[0]['data']['x']}`+
                     `</div>` +
-                    `<div style="padding: 10px; font-size: 15px"">` +
-                      `${data[0]['data']['a']}`+
+                    `<div style="padding: 10px; font-size: 15px">` +
+                    `${data[0]['data']['y']}`+
                     `</div>` +
-                    `<div style="padding: 10px; font-size: 15px"">` +
-                      `${data[0]['data']['b']}`+
+                    `<div style="padding: 10px; font-size: 15px">` +
+                    `Compared: ${time}`+
+                    `</div>` +
+                    `<div style="padding: 10px; font-size: 15px">` +
+                    `${data[0]['data']['a']}`+
+                    `</div>` +
+                    `<div style="padding: 10px; font-size: 15px">` +
+                    `${data[0]['data']['b']}`+
                     `</div>`
                     : ``;
                 }
@@ -100,39 +101,38 @@ const BestSelling = ({loading, bestSellingData, time}) => {
             className={styles.salesCard}
             bordered={false}
             title="Best Selling Products(Value)"
-            style={{
-              height: '100%',
-            }}
-            size='small'
           >
             <Pie
-              forceFit
-              height={340}
               radius={0.8}
               angleField="y"
               colorField="x"
               data={topRevenueData}
               label={{
-                visible: true,
-                type: 'spider',
-                formatter: (text, item) => {
-                  // eslint-disable-next-line no-underscore-dangle
-                  return `${item._origin.x}: ${numeral(item._origin.y).format('0,0.00')}`;
-                },
+                type: 'outer',
                 style: {
                   fontSize: 15
-                }
+                },
+                formatter: (text, item) => {
+                  return `${numeral(item._origin.y).format('0,0.00')}€`;
+                },
               }}
+              interactions={[{ type: 'element-single-selected' }, { type: 'element-active' }]}
               tooltip={{
                 customContent: (title, data) => {
                   return data.length > 0 ?
-                    `<div style="padding: 10px; font-size: 15px"">` +
-                    `${time}`+
+                    `<div style="padding: 10px; font-size: 15px">` +
+                    `${data[0]['data']['x']}`+
                     `</div>` +
-                    `<div style="padding: 10px; font-size: 15px"">` +
+                    `<div style="padding: 10px; font-size: 15px">` +
+                    `${data[0]['data']['y']}€`+
+                    `</div>` +
+                    `<div style="padding: 10px; font-size: 15px">` +
+                    `Compared: ${time}`+
+                    `</div>` +
+                    `<div style="padding: 10px; font-size: 15px">` +
                     `${data[0]['data']['a']}`+
                     `</div>` +
-                    `<div style="padding: 10px; font-size: 15px"">` +
+                    `<div style="padding: 10px; font-size: 15px">` +
                     `${data[0]['data']['b']}`+
                     `</div>`
                     : ``;
@@ -147,39 +147,38 @@ const BestSelling = ({loading, bestSellingData, time}) => {
             className={styles.salesCard}
             bordered={false}
             title="Most Profitable Products(Value)"
-            style={{
-              height: '100%',
-            }}
-            size='small'
           >
             <Pie
-              forceFit
-              height={340}
               radius={0.8}
               angleField="y"
               colorField="x"
               data={topProfitData}
               label={{
-                visible: true,
-                type: 'spider',
-                formatter: (text, item) => {
-                  // eslint-disable-next-line no-underscore-dangle
-                  return `${item._origin.x}: ${numeral(item._origin.y).format('0,0.00')}`;
-                },
+                type: 'outer',
                 style: {
                   fontSize: 15
+                },
+                formatter: (text, item) => {
+                  return `${numeral(item._origin.y).format('0,0.00')}€`;
                 }
               }}
+              interactions={[{ type: 'element-single-selected' }, { type: 'element-active' }]}
               tooltip={{
                 customContent: (title, data) => {
                   return data.length > 0 ?
-                    `<div style="padding: 10px; font-size: 15px"">` +
-                    `${time}`+
+                    `<div style="padding: 10px; font-size: 15px">` +
+                    `${data[0]['data']['x']}`+
                     `</div>` +
-                    `<div style="padding: 10px; font-size: 15px"">` +
+                    `<div style="padding: 10px; font-size: 15px">` +
+                    `${data[0]['data']['y']}€`+
+                    `</div>` +
+                    `<div style="padding: 10px; font-size: 15px">` +
+                    `Compared: ${time}`+
+                    `</div>` +
+                    `<div style="padding: 10px; font-size: 15px">` +
                     `${data[0]['data']['a']}`+
                     `</div>` +
-                    `<div style="padding: 10px; font-size: 15px"">` +
+                    `<div style="padding: 10px; font-size: 15px">` +
                     `${data[0]['data']['b']}`+
                     `</div>`
                     : ``;

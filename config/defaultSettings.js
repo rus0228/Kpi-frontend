@@ -3,7 +3,7 @@ const Settings = {
   // 拂晓蓝
   primaryColor: '#1890ff',
   contentWidth: 'Fixed',
-  fixedHeader: true,
+  fixedHeader: false,
   splitMenus: false,
   fixSiderbar: true,
   colorWeak: true,

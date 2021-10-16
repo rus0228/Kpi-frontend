@@ -47,7 +47,7 @@ const ProportionSales = ({
         }}
         label={{
           visible: true,
-          type: 'spider',
+          type: 'outer',
           formatter: (text, item) => {
             // eslint-disable-next-line no-underscore-dangle
             return `${item._origin.x}: ${numeral(item._origin.y).format('0,0')}`;

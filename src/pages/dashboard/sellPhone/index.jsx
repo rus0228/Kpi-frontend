@@ -9,16 +9,27 @@ import Yuan from "@/pages/dashboard/analysis/utils/Yuan";
 import moment from "moment";
 import {CardFooter, Comparison, ComparisonInt, CardFooterTime, ComparisonTime, Time} from "@/pages/dashboard/CustomComponent";
 import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";
+import {isMobile} from 'react-device-detect';
+const mobileStyle = isMobile ? {marginTop: 164} : {};
 
+const topColResponsiveProps = {
+  xs: 24,
+  sm: 24,
+  md: 24,
+  lg: 24,
+  xl: 8
+};
 const SellPhone = () => {
   const {initialState} = useModel('@@initialState');
   const { loading, data } = useRequest(fakeChartData);
   const [sellPhoneData, setSellPhoneData] = React.useState({
+    cancelledOrders: 0,
     receivedOrders: 0,
     finishedOrders: 0,
     totalPaidAmount: 0,
     averageAmount: 0,
     averageTime: 0,
+    _cancelledOrders,
     _receivedOrders: 0,
     _finishedOrders: 0,
     _totalPaidAmount: 0,
@@ -29,18 +40,20 @@ const SellPhone = () => {
   const changedStates = getChangedGlobalStates(initialState);
   const {startTime, endTime, _startTime, _endTime, store} = changedStates;
 
-  const {receivedOrders, finishedOrders, totalPaidAmount, averageAmount, averageTime,
+  const {cancelledOrders, receivedOrders, finishedOrders, totalPaidAmount, averageAmount, averageTime, _cancelledOrders,
     _receivedOrders, _finishedOrders, _totalPaidAmount, _averageAmount, _averageTime} = sellPhoneData
 
   React.useEffect(() => {
     getSellPhoneData(startTime, endTime, _startTime, _endTime, store).then((res) => {
       setSellPhoneData({
         ...sellPhoneData,
+        cancelledOrders: parseFloat(res['current']['cancelledOrders']),
         receivedOrders: parseFloat(res['current']['receivedOrders']),
         finishedOrders: parseFloat(res['current']['finishedOrders']),
         totalPaidAmount: parseFloat(res['current']['totalPaidAmount']),
         averageAmount: parseFloat(res['current']['averageAmount']),
         averageTime: parseFloat(res['current']['averageTime']),
+        _cancelledOrders: parseFloat(res['prev']['cancelledOrders']),
         _receivedOrders: parseFloat(res['prev']['receivedOrders']),
         _finishedOrders: parseFloat(res['prev']['finishedOrders']),
         _totalPaidAmount: parseFloat(res['prev']['totalPaidAmount']),
@@ -51,10 +64,29 @@ const SellPhone = () => {
   }, [])
 
   return (
-    <GridContent>
+    <GridContent style={mobileStyle}>
       <Suspense fallback={null}>
         <Row gutter={[24, 24]}>
-          <Col span={12}>
+          <Col {...topColResponsiveProps}>
+            <ChartCard
+              bordered={false}
+              title="Number of Orders Cancelled"
+              action={
+                <Tooltip
+                  title={
+                    <ComparisonInt current={cancelledOrders} prev={_cancelledOrders} _startTime={_startTime} _endTime={_endTime}/>
+                  }
+                >
+                  <InfoCircleOutlined />
+                </Tooltip>
+              }
+              loading={loading}
+              total={() => <div>{cancelledOrders}</div>}
+              footer={<CardFooter current={cancelledOrders} prev={_cancelledOrders}/>}
+              contentHeight={46}
+            />
+          </Col>
+          <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
               title="Number of Orders Received"
@@ -74,7 +106,7 @@ const SellPhone = () => {
             />
           </Col>
 
-          <Col span={12}>
+          <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
               title="Number of Orders Finished"
@@ -95,7 +127,7 @@ const SellPhone = () => {
           </Col>
         </Row>
         <Row gutter={[24,24]} style={{marginTop: 24}}>
-          <Col span={8}>
+          <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
               title="Total Amount Paid"
@@ -115,7 +147,7 @@ const SellPhone = () => {
             />
           </Col>
 
-          <Col span={8}>
+          <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
               title="Average Amount Paid"
@@ -134,7 +166,7 @@ const SellPhone = () => {
               contentHeight={46}
             />
           </Col>
-          <Col span={8}>
+          <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
               title="Average Time between Received and Finished"

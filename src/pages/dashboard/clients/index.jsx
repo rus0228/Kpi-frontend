@@ -10,7 +10,9 @@ import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
 import {CardFooter, ComparisonInt} from "@/pages/dashboard/CustomComponent";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";
-
+import {isMobile} from 'react-device-detect';
+import moment from "moment";
+const mobileStyle = isMobile ? {marginTop: 164} : {};
 const Monitor = () => {
   const {initialState} = useModel('@@initialState');
   const { loading, data } = useRequest(fakeChartData);
@@ -34,7 +36,7 @@ const Monitor = () => {
   }, [initialState])
 
   return (
-    <GridContent>
+    <GridContent style={mobileStyle}>
       <>
         <Row gutter={24} style={{marginBottom: 24}}>
           <Col xl={24} lg={24} md={24} sm={24} xs={24}>
@@ -71,7 +73,7 @@ const Monitor = () => {
               <RepeatedCustomerRate
                 loading={loading}
                 data={repeatedCustomerData}
-                time={`${_startTime} ~ ${_endTime}`}
+                time={`${moment(_startTime).format('YYYY/MM/DD')} ~ ${moment(_endTime).format('YYYY/MM/DD')}`}
               />
             </Suspense>
           </Col>
@@ -82,7 +84,7 @@ const Monitor = () => {
               <MostSpentClients
                 loading={loading}
                 mostSpentClientsData={mostSpentClientsData}
-                time={`${_startTime} ~ ${_endTime}`}
+                time={`${moment(_startTime).format('YYYY/MM/DD')} ~ ${moment(_endTime).format('YYYY/MM/DD')}`}
               />
             </Suspense>
           </Col>

@@ -1,9 +1,9 @@
 import numeral from "numeral";
 import Trend from "@/pages/dashboard/analysis/components/Trend";
 import React from "react";
-
+import moment from "moment";
 export const CardFooter = ({current, prev}) => {
-  const flag = current > prev ? 'up' : 'down'
+  const flag = current > prev || prev === null ? 'up' : 'down'
   const percentage = current > prev
     ? `+${numeral((current - prev) / prev *100).format('0,0.00')}%`
     : `${numeral((current - prev) / prev *100).format('0,0.00')}%`;
@@ -14,9 +14,9 @@ export const CardFooter = ({current, prev}) => {
         marginRight: 16,
       }}
     >
-      <span>
+      <span style={{paddingRight: 10}}>
         {
-          percentage
+          prev !== null && current !== null ? percentage : 'Empty previous or current value'
         }
       </span>
     </Trend>
@@ -35,7 +35,7 @@ export const Comparison = ({current, prev, _startTime, _endTime}) => {
     <div>
       <div>
         {
-          percentage
+          prev !== null && current !== null ? percentage : 'Empty previous or current value'
         }
       </div>
       <div>
@@ -45,7 +45,7 @@ export const Comparison = ({current, prev, _startTime, _endTime}) => {
       </div>
       <div>
         {
-          `${_startTime} - ${_endTime}`
+          `${moment(_startTime).format('YYYY/MM/DD')} - ${moment(_endTime).format('YYYY/MM/DD')}`
         }
       </div>
     </div>
@@ -75,7 +75,7 @@ export const ComparisonInt = ({current, prev, _startTime, _endTime}) => {
       </div>
       <div>
         {
-          `${_startTime} - ${_endTime}`
+          `${moment(_startTime).format('YYYY/MM/DD')} - ${moment(_endTime).format('YYYY/MM/DD')}`
         }
       </div>
     </div>
@@ -107,7 +107,7 @@ export const ComparisonTime = ({current, prev, _startTime, _endTime}) => {
       </div>
       <div>
         {
-          `${_startTime} - ${_endTime}`
+          `${moment(_startTime).format('YYYY/MM/DD')} - ${moment(_endTime).format('YYYY/MM/DD')}`
         }
       </div>
     </div>

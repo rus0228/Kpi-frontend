@@ -8,6 +8,9 @@ import FrequentSupplier from "./components/FrequentSupplier";
 import PurchasedSupplier from "./components/PurchasedSupplier";
 import PurchasedCard from "./components/PurchasedCard";
 import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";
+import moment from "moment";
+import {isMobile} from 'react-device-detect';
+const mobileStyle = isMobile ? {marginTop: 164} : {};
 
 const Purchases = () => {
   const {initialState} = useModel('@@initialState');
@@ -32,7 +35,7 @@ const Purchases = () => {
   }, [initialState])
 
   return (
-    <GridContent>
+    <GridContent style={mobileStyle}>
       <>
         <Row gutter={24}>
           <Col xl={24} lg={24} md={24} sm={24} xs={24}>
@@ -51,7 +54,7 @@ const Purchases = () => {
               <FrequentSupplier
                 loading={loading}
                 frequentSupplierData={frequentSupplierData}
-                time={`${_startTime} ~ ${_endTime}`}
+                time={`${moment(_startTime).format('YYYY/MM/DD')} ~ ${moment(_endTime).format('YYYY/MM/DD')}`}
               />
             </Suspense>
           </Col>
@@ -62,7 +65,7 @@ const Purchases = () => {
               <PurchasedSupplier
                 loading={loading}
                 purchasedSupplierData={purchasedSupplierData}
-                time={`${_startTime} ~ ${_endTime}`}
+                time={`${moment(_startTime).format('YYYY/MM/DD')} ~ ${moment(_endTime).format('YYYY/MM/DD')}`}
               />
             </Suspense>
           </Col>

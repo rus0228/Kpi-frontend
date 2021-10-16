@@ -8,7 +8,15 @@ import {InfoCircleOutlined} from "@ant-design/icons";
 import Yuan from "@/pages/dashboard/analysis/utils/Yuan";
 import {CardFooter, Comparison, ComparisonInt, CardFooterTime, ComparisonTime, Time} from "@/pages/dashboard/CustomComponent";
 import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";
-
+import {isMobile} from 'react-device-detect';
+const mobileStyle = isMobile ? {marginTop: 164} : {};
+const topColResponsiveProps = {
+  xs: 24,
+  sm: 24,
+  md: 24,
+  lg: 24,
+  xl: 12
+};
 const Sos = () => {
   const {initialState} = useModel('@@initialState');
   const { loading, data } = useRequest(fakeChartData);
@@ -45,10 +53,10 @@ const Sos = () => {
   }, [initialState])
 
   return (
-    <GridContent>
+    <GridContent style={mobileStyle}>
       <Suspense fallback={null}>
         <Row gutter={[24, 24]}>
-          <Col span={12}>
+          <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
               title="Number of Orders Received"
@@ -68,7 +76,7 @@ const Sos = () => {
             />
           </Col>
 
-          <Col span={12}>
+          <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
               title="Number of Orders Shipped"
@@ -89,7 +97,7 @@ const Sos = () => {
           </Col>
         </Row>
         <Row gutter={[24,24]} style={{marginTop: 24}}>
-          <Col span={12}>
+          <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
               title="Total Revenue"
@@ -108,7 +116,7 @@ const Sos = () => {
               contentHeight={46}
             />
           </Col>
-          <Col span={12}>
+          <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
               title="Average Time between Received and Shipped"

@@ -12,7 +12,8 @@ import Yuan from "@/pages/dashboard/analysis/utils/Yuan";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import {CardFooter, Comparison} from "@/pages/dashboard/CustomComponent";
 import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";
-
+import {isMobile} from 'react-device-detect';
+const mobileStyle = isMobile ? {marginTop: 164} : {};
 const topColResponsiveProps = {
   xs: 24,
   sm: 24,
@@ -134,7 +135,7 @@ const Analysis = () => {
   },[initialState])
 
   return (
-    <GridContent>
+    <GridContent style={mobileStyle}>
       <>
         <Suspense fallback={<PageLoading />}>
           <Row gutter={24}>
@@ -329,7 +330,6 @@ const Analysis = () => {
               padding: 24,
               marginBottom: 24,
             }}
-            size='small'
           >
             <RevenueProfitQtyPanel
               revenueProfitQtyData={salesRevenueProfitQtyData}
@@ -345,7 +345,6 @@ const Analysis = () => {
               padding: 24,
               marginBottom: 24
             }}
-            size='small'
           >
             <RevenueProfitQtyPanel
               revenueProfitQtyData={repairsRevenueProfitQtyData}
@@ -361,7 +360,6 @@ const Analysis = () => {
               padding: 24,
               marginBottom: 24
             }}
-            size='small'
           >
             <RevenueProfitQtyPanel
               revenueProfitQtyData={returnsRevenueProfitQtyData}
@@ -377,7 +375,6 @@ const Analysis = () => {
               padding: 24,
               marginBottom: 24
             }}
-            size='small'
           >
             <RevenueQtyPanel
               revenueQtyData={purchaseOrdersRevenueQtyData}

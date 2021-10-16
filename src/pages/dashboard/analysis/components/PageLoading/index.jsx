@@ -5,7 +5,7 @@ export default () => (
   <div
     style={{
       paddingTop: 100,
-      textAlign: 'center',
+      textAlign: 'center'
     }}
   >
     <Spin size="large" />

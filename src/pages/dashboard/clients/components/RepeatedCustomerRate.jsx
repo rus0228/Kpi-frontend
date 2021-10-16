@@ -40,41 +40,40 @@ const RepeatedCustomerRate = ({loading, data, time}) => {
       style={{
         height: '100%',
       }}
-      size='small'
     >
       <Row gutter={16}>
         <Col span={24}>
           <Pie
-            forceFit
-            height={340}
             radius={0.8}
             angleField="y"
             colorField="x"
             data={repeatedRateData}
-            legend={{
-              visible: false,
-            }}
             label={{
-              visible: true,
-              type: 'spider',
-              formatter: (text, item) => {
-                // eslint-disable-next-line no-underscore-dangle
-                return `${item._origin.x}: ${numeral(item._origin.y).format('0,0')}`;
-              },
+              type: 'outer',
               style: {
                 fontSize: 15
+              },
+              formatter: (text, item) => {
+                return `${numeral(item._origin.y).format('0,0')}`;
               }
             }}
+            interactions={[{ type: 'element-single-selected' }, { type: 'element-active' }]}
             tooltip={{
               customContent: (title, data) => {
                 return data.length > 0 ?
-                  `<div style="padding: 10px; font-size: 15px"">` +
-                  `${time}`+
+                  `<div style="padding: 10px; font-size: 15px">` +
+                  `${data[0]['data']['x']}`+
                   `</div>` +
-                  `<div style="padding: 10px; font-size: 15px"">` +
+                  `<div style="padding: 10px; font-size: 15px">` +
+                  `${data[0]['data']['y']}`+
+                  `</div>` +
+                  `<div style="padding: 10px; font-size: 15px">` +
+                  `Compared: ${time}`+
+                  `</div>` +
+                  `<div style="padding: 10px; font-size: 15px">` +
                   `${data[0]['data']['a']}`+
                   `</div>` +
-                  `<div style="padding: 10px; font-size: 15px"">` +
+                  `<div style="padding: 10px; font-size: 15px">` +
                   `${data[0]['data']['b']}`+
                   `</div>`
                   : ``;

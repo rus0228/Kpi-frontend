@@ -8,6 +8,7 @@ import styles from './index.less';
 import NoticeIconView from '../NoticeIcon';
 import moment from "moment";
 import {getTimeDistance} from "@/pages/dashboard/analysis/utils/utils";
+import {isMobile} from 'react-device-detect';
 
 const {RangePicker} = DatePicker;
 const {Option} = Select
@@ -51,24 +52,43 @@ const GlobalHeaderRight = () => {
   const onCompareChange = (value) => {
     setCompare(value)
   }
+
+  const Panel = () => {
+    return (
+      <>
+        <Select value={compare} onChange={onCompareChange} style={{marginLeft: 6}}>
+          <Option value="lastDuration">Last Duration</Option>
+          <Option value="lastYear">Last Year</Option>
+        </Select>
+        <RangePicker
+          value={range}
+          onChange={handleRangePickerChange}
+          style={{marginLeft: 6}}
+        />
+        <Select value={store} onChange={onStoreChange} style={{marginLeft: 6}}>
+          <Option value="0">All</Option>
+          <Option value="1">Store 1</Option>
+          <Option value="2">Store 2</Option>
+          <Option value="3">Store 3</Option>
+        </Select>
+      </>
+    )
+  }
   return (
-    <Space className={className}>
-      <Select value={compare} onChange={onCompareChange}>
-        <Option value="lastDuration">Last Duration</Option>
-        <Option value="lastYear">Last Year</Option>
-      </Select>
-      <RangePicker
-        value={range}
-        onChange={handleRangePickerChange}
-      />
-      <Select value={store} style={{width: 75}} onChange={onStoreChange}>
-        <Option value="0">All</Option>
-        <Option value="1">Store 1</Option>
-        <Option value="2">Store 2</Option>
-        <Option value="3">Store 3</Option>
-      </Select>
-      <Avatar menu />
-    </Space>
+    <>
+      <Space className={className}>
+        {
+          !isMobile && <Panel />
+        }
+        <Avatar menu />
+      </Space>
+      {
+        isMobile &&
+        <div style={{display: 'flex', flexDirection: 'column', position: 'absolute', top: 70, gap: 24}}>
+          <Panel />
+        </div>
+      }
+    </>
   );
 };
 
