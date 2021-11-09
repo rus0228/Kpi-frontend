@@ -6,7 +6,7 @@ import {Suspense, useState} from "react";
 import { fakeChartData, getNumberOfNewClients, getMostSpentClientsData, getRepeatedCustomerRate } from "./service";
 import MostSpentClients from "./components/MostSpentClients";
 import RepeatedCustomerRate from './components/RepeatedCustomerRate'
-import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
+import {ChartCard} from "@/pages/dashboard/revenue/components/Charts";
 import {CardFooter, ComparisonInt} from "@/pages/dashboard/CustomComponent";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";

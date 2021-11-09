@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from "@/pages/dashboard/analysis/style.less";
+import styles from "@/pages/dashboard/revenue/style.less";
 import {Col, Row, Statistic, Radio} from "antd";
 const responsiveProps = {
   xs: 12,

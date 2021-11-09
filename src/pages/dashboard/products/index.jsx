@@ -7,7 +7,7 @@ import {fakeChartData, getNumberOfNewProducts, getBestSellingProductsData} from 
 import BestSelling from './components/BestSelling';
 import {CardFooter, Comparison, ComparisonInt} from "@/pages/dashboard/CustomComponent";
 import {InfoCircleOutlined} from "@ant-design/icons";
-import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
+import {ChartCard} from "@/pages/dashboard/revenue/components/Charts";
 import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";
 import {isMobile} from 'react-device-detect';
 import moment from "moment";

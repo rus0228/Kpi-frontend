@@ -1,13 +1,8 @@
 import { Space, DatePicker, Select } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
 import React, {useState} from 'react';
 import { useModel } from 'umi';
-import Avatar from './AvatarDropdown';
-import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
-import NoticeIconView from '../NoticeIcon';
-import moment from "moment";
-import {getTimeDistance} from "@/pages/dashboard/analysis/utils/utils";
+import {getTimeDistance} from "@/pages/dashboard/revenue/utils/utils";
 import {isMobile} from 'react-device-detect';
 
 const {RangePicker} = DatePicker;
@@ -80,7 +75,6 @@ const GlobalHeaderRight = () => {
         {
           !isMobile && <Panel />
         }
-        <Avatar menu />
       </Space>
       {
         isMobile &&

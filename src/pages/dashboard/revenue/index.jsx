@@ -7,8 +7,8 @@ import {fakeChartData, getSalesRevenueProfitQty, getRepairsRevenueProfitQty,
 import PageLoading from './components/PageLoading';
 import RevenueProfitQtyPanel from "./components/RevenueProfitQtyPanel";
 import RevenueQtyPanel from "./components/RevenueQtyPanel";
-import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
-import Yuan from "@/pages/dashboard/analysis/utils/Yuan";
+import {ChartCard} from "@/pages/dashboard/revenue/components/Charts";
+import Yuan from "@/pages/dashboard/revenue/utils/Yuan";
 import {InfoCircleOutlined} from "@ant-design/icons";
 import {CardFooter, Comparison} from "@/pages/dashboard/CustomComponent";
 import {getChangedGlobalStates} from "@/pages/dashboard/CustomUtils";

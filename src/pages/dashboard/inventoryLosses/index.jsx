@@ -7,8 +7,8 @@ import moment from "moment";
 import {InfoCircleOutlined} from '@ant-design/icons';
 import numeral from "numeral";
 import {Pie} from '@ant-design/charts'
-import {ChartCard} from "@/pages/dashboard/analysis/components/Charts";
-import Yuan from "@/pages/dashboard/analysis/utils/Yuan";
+import {ChartCard} from "@/pages/dashboard/revenue/components/Charts";
+import Yuan from "@/pages/dashboard/revenue/utils/Yuan";
 import {CardFooter, Comparison} from "@/pages/dashboard/CustomComponent";
 import {getChangedGlobalStates, getDiffAndPercentage} from "@/pages/dashboard/CustomUtils";
 import {isMobile} from 'react-device-detect';

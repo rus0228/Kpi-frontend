@@ -9,7 +9,7 @@
 export default {
   dev: {
     '/api/': {
-      target: 'http://localhost',
+      target: 'http://localhost:3000',
       changeOrigin: true,
       pathRewrite: {
         '^': '',
@@ -27,7 +27,7 @@ export default {
   },
   pre: {
     '/api/': {
-      target: 'http://localhost',
+      target: 'http://localhost:3000',
       changeOrigin: true,
       pathRewrite: {
         '^': '',

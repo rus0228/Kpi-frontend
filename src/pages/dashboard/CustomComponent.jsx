@@ -1,5 +1,5 @@
 import numeral from "numeral";
-import Trend from "@/pages/dashboard/analysis/components/Trend";
+import Trend from "@/pages/dashboard/revenue/components/Trend";
 import React from "react";
 import moment from "moment";
 export const CardFooter = ({current, prev}) => {
